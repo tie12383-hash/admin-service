@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}Моя статистика{% endblock %}
+
+{% block content %}
+<h2>Статистика по моим рассылкам</h2>
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card bg-light">
+            <div class="card-body text-center">
+                <h5>Успешных попыток</h5>
+                <p class="display-6 text-success">{{ success_count }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-light">
+            <div class="card-body text-center">
+                <h5>Неуспешных попыток</h5>
+                <p class="display-6 text-danger">{{ failure_count }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-light">
+            <div class="card-body text-center">
+                <h5>Всего отправлено</h5>
+                <p class="display-6 text-info">{{ total_sent }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h4>Мои рассылки</h4>
+<table class="table">
+    <thead><tr><th>ID</th><th>Тема</th><th>Период</th><th>Статус</th><th>Попытки</th></tr></thead>
+    <tbody>
+        {% for mailing in mailings %}
+        <tr>
+            <td>{{ mailing.id }}</td>
+            <td>{{ mailing.message.subject }}</td>
+            <td>{{ mailing.start_time|date:"d.m" }} – {{ mailing.end_time|date:"d.m" }}</td>
+            <td>{{ mailing.get_status_display }}</td>
+            <td>{{ mailing.attempt_set.count }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

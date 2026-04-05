@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+<div class="row text-center">
+    <div class="col-md-4 mb-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <h5 class="card-title">Всего рассылок</h5>
+                <p class="display-4">{{ stats.total_mailings }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <h5 class="card-title">Активных рассылок</h5>
+                <p class="display-4">{{ stats.active_mailings }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card text-white bg-secondary">
+            <div class="card-body">
+                <h5 class="card-title">Уникальных клиентов</h5>
+                <p class="display-4">{{ stats.unique_clients }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if user.is_authenticated %}
+<div class="alert alert-info">
+    <h5>Ваша персональная статистика</h5>
+    <p>✅ Успешных попыток: {{ user_success }} | ❌ Неуспешных: {{ user_failure }} | 📨 Всего отправлено: {{ user_total_sent }}</p>
+    <a href="{% url 'mailing:user_stats' %}" class="btn btn-sm btn-outline-primary">Подробнее</a>
+</div>
+{% endif %}
+{% endblock %}

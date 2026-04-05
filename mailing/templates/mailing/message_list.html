@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}Сообщения{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Мои сообщения</h2>
+    <a href="{% url 'mailing:message_create' %}" class="btn btn-success">+ Новое сообщение</a>
+</div>
+
+<div class="row">
+    {% for message in messages %}
+    <div class="col-md-6 mb-3">
+        <div class="card h-100">
+            <div class="card-header">
+                <strong>{{ message.subject }}</strong>
+            </div>
+            <div class="card-body">
+                <p class="card-text">{{ message.body|truncatechars:150 }}</p>
+            </div>
+            <div class="card-footer text-end">
+                <a href="{% url 'mailing:message_update' message.pk %}" class="btn btn-sm btn-primary">Изменить</a>
+                <a href="{% url 'mailing:message_delete' message.pk %}" class="btn btn-sm btn-danger">Удалить</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-info">Нет сообщений. <a href="{% url 'mailing:message_create' %}">Создайте первое</a></div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block title %}Рассылка #{{ mailing.id }}{% endblock %}
+
+{% block content %}
+<div class="card mb-4">
+    <div class="card-header bg-info text-white">
+        <h3>Рассылка #{{ mailing.id }}</h3>
+    </div>
+    <div class="card-body">
+        <p><strong>Начало:</strong> {{ mailing.start_time|date:"d.m.Y H:i" }}</p>
+        <p><strong>Окончание:</strong> {{ mailing.end_time|date:"d.m.Y H:i" }}</p>
+        <p><strong>Статус:</strong>
+            {% if mailing.status == 'created' %} <span class="badge bg-secondary">Создана</span>
+            {% elif mailing.status == 'started' %} <span class="badge bg-success">Запущена</span>
+            {% else %} <span class="badge bg-danger">Завершена</span>{% endif %}
+        </p>
+        <p><strong>Сообщение:</strong> {{ mailing.message.subject }}</p>
+        <p><strong>Тело письма:</strong><br>{{ mailing.message.body|linebreaks }}</p>
+        <p><strong>Получатели ({{ mailing.recipients.count }}):</strong></p>
+        <ul>
+            {% for client in mailing.recipients.all %}
+                <li>{{ client.full_name }} ({{ client.email }})</li>
+            {% endfor %}
+        </ul>
+        {% if mailing.status == 'started' %}
+            <a href="{% url 'mailing:start_mailing' mailing.pk %}" class="btn btn-success">Запустить вручную</a>
+        {% endif %}
+        <a href="{% url 'mailing:mailing_list' %}" class="btn btn-secondary">Назад</a>
+    </div>
+</div>
+
+<h4>История попыток отправки</h4>
+<table class="table table-sm">
+    <thead>
+        <tr><th>Дата/время</th><th>Статус</th><th>Ответ сервера</th></tr>
+    </thead>
+    <tbody>
+        {% for attempt in mailing.attempt_set.all %}
+        <tr>
+            <td>{{ attempt.attempt_time|date:"d.m.Y H:i:s" }}</td>
+            <td>
+                {% if attempt.status == 'success' %}
+                    <span class="badge bg-success">Успешно</span>
+                {% else %}
+                    <span class="badge bg-danger">Не успешно</span>
+                {% endif %}
+            </td>
+            <td>{{ attempt.server_response|default:"—" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="3">Попыток пока нет.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
