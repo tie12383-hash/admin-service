@@ -1,0 +1,21 @@
+# Секреты и переменные окружения
+.env
+.env.local
+.env.*.local
+
+# Файлы IDE
+.idea/
+*.iml
+
+# Виртуальное окружение
+.venv/
+venv/
+env/
+
+# База данных SQLite
+db.sqlite3
+*.db
+
+# Кэш Python
+__pycache__/
+*.pyc
