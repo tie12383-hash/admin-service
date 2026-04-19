@@ -27,6 +27,9 @@ class Message(models.Model):
     class Meta:
         verbose_name = 'Сообщение'
         verbose_name_plural = 'Сообщения'
+        permissions = [
+            ('can_view_all_messages', 'Может просматривать все сообщения'),
+        ]
 
 class Mailing(models.Model):
     STATUS_CHOICES = [

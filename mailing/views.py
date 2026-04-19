@@ -113,6 +113,47 @@ def dashboard(request):
         }
         cache.set(cache_key, stats, 60 * 5)
     return render(request, 'mailing/dashboard.html', {'stats': stats})
+    if request.user.is_authenticated:
+        user_mailings = Mailing.objects.filter(owner=request.user)
+        user_attempts = Attempt.objects.filter(mailing__in=user_mailings)
+        user_success = user_attempts.filter(status='success').count()
+        user_failure = user_attempts.filter(status='failure').count()
+        user_total_sent = user_attempts.count()
+    else:
+        user_success = user_failure = user_total_sent = 0
+
+    return render(request, 'mailing/dashboard.html', {
+        'stats': stats,
+        'user_success': user_success,
+        'user_failure': user_failure,
+        'user_total_sent': user_total_sent,
+    })
+
+class MessageCreateView(LoginRequiredMixin, CreateView):
+    model = Message
+    form_class = MessageForm
+    template_name = 'mailing/message_form.html'
+    success_url = reverse_lazy('mailing:message_list')
+
+    def form_valid(self, form):
+        form.instance.owner = self.request.user
+        return super().form_valid(form)
+
+class MessageListView(LoginRequiredMixin, ListView):
+    model = Message
+    template_name = 'mailing/message_list.html'
+    context_object_name = 'messages'
+
+    def get_queryset(self):
+        return Message.objects.filter(owner=self.request.user)
+
+class AttemptListView(LoginRequiredMixin, ListView):
+    model = Attempt
+    template_name = 'mailing/attempt_list.html'
+    context_object_name = 'attempts'
+
+    def get_queryset(self):
+        return Attempt.objects.filter(mailing__owner=self.request.user).order_by('-attempt_time')
 
 # Страница статистики пользователя
 def user_stats(request):
@@ -128,3 +169,55 @@ def user_stats(request):
         'total_sent': total_sent,
         'mailings': mailings,
     })
+
+class MessageUpdateView(LoginRequiredMixin, UpdateView):
+    model = Message
+    form_class = MessageForm
+    template_name = 'mailing/message_form.html'
+    success_url = reverse_lazy('mailing:message_list')
+
+    def get_queryset(self):
+        return Message.objects.filter(owner=self.request.user)
+
+class MessageDeleteView(LoginRequiredMixin, DeleteView):
+    model = Message
+    template_name = 'mailing/message_confirm_delete.html'
+    success_url = reverse_lazy('mailing:message_list')
+
+    def get_queryset(self):
+        return Message.objects.filter(owner=self.request.user)
+
+class MailingListView(LoginRequiredMixin, ListView):
+    model = Mailing
+    template_name = 'mailing/mailing_list.html'
+    context_object_name = 'mailings'
+
+    def get_queryset(self):
+        return Mailing.objects.filter(owner=self.request.user)
+
+class MailingCreateView(LoginRequiredMixin, CreateView):
+    model = Mailing
+    form_class = MailingForm
+    template_name = 'mailing/mailing_form.html'
+    success_url = reverse_lazy('mailing:mailing_list')
+
+    def form_valid(self, form):
+        form.instance.owner = self.request.user
+        return super().form_valid(form)
+
+class MailingUpdateView(LoginRequiredMixin, UpdateView):
+    model = Mailing
+    form_class = MailingForm
+    template_name = 'mailing/mailing_form.html'
+    success_url = reverse_lazy('mailing:mailing_list')
+
+    def get_queryset(self):
+        return Mailing.objects.filter(owner=self.request.user)
+
+class MailingDeleteView(LoginRequiredMixin, DeleteView):
+    model = Mailing
+    template_name = 'mailing/mailing_confirm_delete.html'
+    success_url = reverse_lazy('mailing:mailing_list')
+
+    def get_queryset(self):
+        return Mailing.objects.filter(owner=self.request.user)

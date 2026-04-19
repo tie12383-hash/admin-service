@@ -6,8 +6,8 @@ env = environ.Env()
 BASE_DIR = Path(__file__).resolve().parent.parent
 environ.Env.read_env(BASE_DIR / '.env')
 
-SECRET_KEY = 'django-insecure'
-DEBUG = env.bool('DEBUG', default=False)
+SECRET_KEY = env('SECRET_KEY')
+DEBUG = env.bool('DEBUG')
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
@@ -56,11 +56,11 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'mailing_db',
-        'USER': 'postgres',
-        'PASSWORD': '123',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'NAME': env('DB_NAME'),
+        'USER': env('DB_USER'),
+        'PASSWORD': env('DB_PASSWORD'),
+        'HOST': env('DB_HOST'),
+        'PORT': env('DB_PORT'),
     }
 }
 
